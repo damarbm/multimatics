@@ -1,4 +1,58 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted, reactive } from "vue";
+import axios from "axios";
+
+const initialProductState = {
+  name: "",
+  price: "",
+  livestock: "",
+};
+
+const product = reactive({ ...initialProductState });
+const products = ref([]);
+const employees = ref([]);
+
+const getAllProducts = async () => {
+  try {
+    const productsResponse = await axios.get("http://localhost:5001/products");
+    products.value = productsResponse.data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const submitForm = async () => {
+  try {
+    const response = await axios.post("http://localhost:5001/products", {
+      productName: product.name,
+      price: product.price,
+      livestock: product.livestock,
+    });
+
+    if (response.status === 201) {
+      await getAllProducts();
+
+      Object.assign(product, initialProductState);
+    }
+  } catch (error) {
+    console.error("ERROR", error.message);
+  }
+};
+
+onMounted(async () => {
+  try {
+    const productsResponse = await axios.get("http://localhost:5001/products");
+    products.value = productsResponse.data;
+
+    const employeesResponse = await axios.get(
+      "https://cordova-media.com/apps/restapi/api/list"
+    );
+    employees.value = employeesResponse.data;
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+</script>
 
 <template>
   <section id="about" class="section">
@@ -75,7 +129,11 @@ Service start
             exercitation ullamco laboris nisi ut aliquip ex
           </p>
         </div>
-        <div class="col-sm-6 col-md-3 wow fadeInLeft">
+        <div
+          v-for="product in products"
+          :key="product.id"
+          class="col-sm-6 col-md-3 wow fadeInLeft"
+        >
           <div class="service">
             <div class="icon-box">
               <span class="icon">
@@ -83,59 +141,9 @@ Service start
               </span>
             </div>
             <div class="caption">
-              <h3>Fully Responsive</h3>
-              <p>
-                Lorem ipsum dolor sit amet, con-sectetur adipisicing elit, sed
-                do eiusmod tempor incididunt ut
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-md-3 wow fadeInLeft" data-wow-delay="0.3s">
-          <div class="service">
-            <div class="icon-box">
-              <span class="icon">
-                <i class="ion-speedometer"></i>
-              </span>
-            </div>
-            <div class="caption">
-              <h3>Speed Optimized</h3>
-              <p>
-                Lorem ipsum dolor sit amet, con-sectetur adipisicing elit, sed
-                do eiusmod tempor incididunt ut
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-md-3 wow fadeInLeft" data-wow-delay="0.6s">
-          <div class="service">
-            <div class="icon-box">
-              <span class="icon">
-                <i class="ion-ios-infinite-outline"></i>
-              </span>
-            </div>
-            <div class="caption">
-              <h3>Tons of Feature</h3>
-              <p>
-                Lorem ipsum dolor sit amet, con-sectetur adipisicing elit, sed
-                do eiusmod tempor incididunt ut
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-md-3 wow fadeInLeft" data-wow-delay="0.9s">
-          <div class="service">
-            <div class="icon-box">
-              <span class="icon">
-                <i class="ion-ios-cloud-outline"></i>
-              </span>
-            </div>
-            <div class="caption">
-              <h3>Cloud Option</h3>
-              <p>
-                Lorem ipsum dolor sit amet, con-sectetur adipisicing elit, sed
-                do eiusmod tempor incididunt ut
-              </p>
+              <h3>{{ product.productName }}</h3>
+              <p>Rp{{ product.price }}</p>
+              <p>Tersedia {{ product.livestock }}</p>
             </div>
           </div>
         </div>
@@ -222,40 +230,53 @@ Contact start
           data-wow-delay="0.3s"
         >
           <div class="form-group">
-            <form action="#" method="post" id="contact-form">
-              <div class="input-field">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Your Name"
-                  name="name"
-                />
-              </div>
-              <div class="input-field">
-                <input
-                  type="email"
-                  class="form-control"
-                  placeholder="Email Address"
-                  name="email"
-                />
-              </div>
-              <div class="input-field">
+            <!-- <form id="contact-form" @submit.prevent> -->
+            <div class="input-field">
+              <input
+                type="text"
+                v-model="product.name"
+                class="form-control"
+                placeholder="Product Name"
+                name="product"
+              />
+            </div>
+            <div class="input-field">
+              <input
+                type="text"
+                v-model.number="product.price"
+                class="form-control"
+                placeholder="Price"
+                name="price"
+              />
+            </div>
+            <div class="input-field">
+              <input
+                type="text"
+                v-model.number="product.livestock"
+                class="form-control"
+                placeholder="Livestock"
+                name="livestock"
+              />
+            </div>
+            <!-- <div class="input-field">
                 <textarea
                   class="form-control"
                   placeholder="Your Message"
                   rows="3"
                   name="message"
                 ></textarea>
-              </div>
-              <button class="btn btn-send" type="submit">Send me</button>
-            </form>
+              </div> -->
+            <button class="btn btn-send" type="submit" @click="submitForm">
+              Send me
+            </button>
+            <!-- </form> -->
 
-            <div id="success">
+            <!-- <div id="success">
               <p>Your Message was sent successfully</p>
             </div>
             <div id="error">
               <p>Your Message was not sent successfully</p>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
