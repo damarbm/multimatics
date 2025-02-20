@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="text/javascript" src="vue.min.js"></script>
+  </head>
+  <body>
+    <div id="data-binding">
+      <a v-bind:href="link" target="_blank">{{ desc }}</a>
+    </div>
+
+    <script type="text/javascript">
+      var app = new Vue({
+        el: "#data-binding",
+        data: { desc: "Detik", link: "https://www.detik.com" },
+      });
+    </script>
+  </body>
+</html>
