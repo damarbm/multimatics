@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vuejs-app-pod
+  labels:
+    app: vuejs-app
+spec:
+  containers:
+    - name: vuejs-app-container
+      image: damarbm/vuejs:1.0
+      ports:
+        - containerPort: 80
